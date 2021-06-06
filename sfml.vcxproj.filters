@@ -26,8 +26,5 @@
     <ClInclude Include="Hero.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="view.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

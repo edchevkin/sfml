@@ -147,7 +147,6 @@
   <ItemGroup>
     <ClInclude Include="Hero.h" />
     <ClInclude Include="map.h" />
-    <ClInclude Include="view.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
