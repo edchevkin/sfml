@@ -1,14 +1,20 @@
 #include <SFML/Graphics.hpp>
-//#include "map.h"
-#include "Hero.h"
+#include "enemy.h"
+#include "map.h"
+#include <vector>
 
 using namespace sf;
 using namespace std;
 
+float getRandCoord() {
+    float r = rt + rand() % (mapWidth - 1) * rt;
+    return r;
+}
+
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(500, 500), "The Quest");
+    sf::RenderWindow window(sf::VideoMode(500, 500), "The Game");
 
     Image mapImage;
     mapImage.loadFromFile("images/map2.png");
@@ -17,9 +23,16 @@ int main()
     Sprite mapSprite;
     mapSprite.setTexture(mapTexture);
 
-    Hero hero(256, 256, 32, 48);
+    Hero hero(512, 512, 32, 48);
+
+    bool allNotDead = true;
+    Enemy enemy1(0, 0, 32, 48);
+    Enemy enemy2(512, 0, 32, 48);
+    Enemy enemy3(0, 512, 32, 48);
 
     float currentFrame = 0;
+    float counter = 0;
+    int counter2 = 0;
     Clock clock;
 
     while (window.isOpen())
@@ -58,40 +71,18 @@ int main()
             if (currentFrame > 4) currentFrame -= 4;
             hero.sprite.setTextureRect(IntRect(32 * int(currentFrame), 144, hero.w, hero.h));
         }
-        //if (Keyboard::isKeyPressed(Keyboard::S) && Keyboard::isKeyPressed(Keyboard::D)) {
-        //    hero.direction = 4; hero.speed = 0.1;
-        //    currentFrame += 0.0005 * time;
-        //    if (currentFrame > 4) currentFrame -= 4;
-        //    hero.sprite.setTextureRect(IntRect(32 * int(currentFrame), 0, hero.w, hero.h));
-        //}
-        //if (Keyboard::isKeyPressed(Keyboard::S) && Keyboard::isKeyPressed(Keyboard::A)) {
-        //    hero.direction = 5; hero.speed = 0.1;
-        //    currentFrame += 0.0005 * time;
-        //    if (currentFrame > 4) currentFrame -= 4;
-        //    hero.sprite.setTextureRect(IntRect(32 * int(currentFrame), 0, hero.w, hero.h));
-        //}
-        //if (Keyboard::isKeyPressed(Keyboard::W) && Keyboard::isKeyPressed(Keyboard::D)) {
-        //    hero.direction = 6; hero.speed = 0.1;
-        //    currentFrame += 0.0005 * time;
-        //    if (currentFrame > 4) currentFrame -= 4;
-        //    hero.sprite.setTextureRect(IntRect(32 * int(currentFrame), 144, hero.w, hero.h));
-        //}
-        //if (Keyboard::isKeyPressed(Keyboard::W) && Keyboard::isKeyPressed(Keyboard::A)) {
-        //    hero.direction = 7; hero.speed = 0.1;
-        //    currentFrame += 0.0005 * time;
-        //    if (currentFrame > 4) currentFrame -= 4;
-        //    hero.sprite.setTextureRect(IntRect(32 * int(currentFrame), 144, hero.w, hero.h));
-        //}
-        //if ((Keyboard::isKeyPressed(Keyboard::W) && Keyboard::isKeyPressed(Keyboard::S))) {
-        //    hero.direction = 8; hero.speed = 0.1;
-        //}
-
         hero.movement(time);
         window.setView(hero.view);
-        window.clear(); //сделать невыохдящую за пределы камеру
+
+        enemy1.movement(time);
+        enemy2.movement(time);
+        enemy3.movement(time);
+
+        window.clear();
+
         for (int i = 0; i < mapHeight; i++)
             for (int j = 0; j < mapWidth; j++) {
-                if (MapLayout[i][j] == '0') 
+                if (MapLayout[i][j] == '0')
                     mapSprite.setTextureRect(IntRect(0, 192, 64, 64));
                 if (MapLayout[i][j] == 'w')
                     mapSprite.setTextureRect(IntRect(704, 64, 64, 64));
@@ -102,6 +93,11 @@ int main()
             }
 
         window.draw(hero.sprite);
+
+        window.draw(enemy1.hitbox);
+        window.draw(enemy2.hitbox);
+        window.draw(enemy3.hitbox);
+
         window.display();
     }
 
