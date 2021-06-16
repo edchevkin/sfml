@@ -1,5 +1,10 @@
 #include <SFML/Graphics.hpp>
-#include "map.h"
+#include <iostream>
+#include "enemy.h"
+extern  const int rt;
+extern const int mapWidth;
+extern const int mapHeight;
+extern sf::String MapLayout[];
 
 using namespace sf;
 using namespace std;
@@ -8,73 +13,131 @@ class Hero {
 public:
     float x, y, w, h, dx, dy, speed = 0;
     int direction = 0;
+    int hp = 100;
+    float camLength = rt * mapWidth;
+    float timeAfterCollision = 0;
+    float animCounter = 0;
+    bool alive = true;
+    RectangleShape hitbox;
     Image image;
     Texture texture;
     Sprite sprite;
     View view;
     Hero(float X, float Y, float W, float H) {
         w = W; h = H;
+        hitbox.setSize(Vector2f(w, h));
+        hitbox.setPosition(x, y);
         image.loadFromFile("images/hero.png");
         texture.loadFromImage(image);
         sprite.setTexture(texture);
         sprite.setTextureRect(IntRect(0, 0, w, h));
         x = X; y = Y;
-        view.reset(FloatRect(x, y, 300, 300));
+        view.reset(FloatRect(x, y, camLength, camLength));
     }
 
     void movement(float time) {
-        switch (direction) {
-        case 0: dx = 0; dy = speed; break;
-        case 1: dx = -speed; dy = 0; break;
-        case 2: dx = speed; dy = 0; break;
-        case 3: dx = 0; dy = -speed; break;
-        //case 4: dx = speed; dy = speed; break;
-        //case 5: dx = -speed; dy = speed; break;
-        //case 6: dx = speed; dy = -speed; break;
-        //case 7: dx = -speed; dy = -speed; break;
-        //case 8: dx = 0; dy = 0; break;
+        keyboard();
+
+        if (direction == 0) {
+            dx = 0; dy = speed;
         }
+        else if (direction == 1) {
+            dx = -speed; dy = 0;
+        }
+        else if (direction == 2) {
+            dx = speed; dy = 0;
+        }
+        else if (direction == 3) {
+            dx = 0; dy = -speed;
+        }
+
         y += dy * time;
         x += dx * time;
         speed = 0;
+
         heroWithMapInteractions();
-        sprite.setPosition(x, y);
+        animation(time);
+        hitbox.setPosition(x, y);
+        sprite.setPosition(hitbox.getPosition());
         viewCentersOnHero(x, y);
     }
 
+    void keyboard() {
+        if (Keyboard::isKeyPressed(Keyboard::S)) {
+            direction = 0;
+            speed = 0.1;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::A)) {
+            direction = 1;
+            speed = 0.1;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::D)) {
+            direction = 2;
+            speed = 0.1;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::W)) {
+            direction = 3; 
+            speed = 0.1;
+             
+        }
+    }
+
+    void animation(float time) {
+        if (direction == 0) {
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), 0, w, h));
+        }
+        if (direction == 1) {
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), h, w, h));
+        }
+        if (direction == 2) {
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), 2 * h, w, h));
+        }
+        if (direction == 3) {
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), 3 * h, w, h));
+        }
+    }
+
     View viewCentersOnHero(float x, float y) {
-        view.setCenter(x + w / 2, y + h / 2);
+        float cameraX = x + w / 2; float cameraY = y + h / 2;
+        if (cameraX < camLength / 2)
+            cameraX = camLength / 2;
+        if (cameraY < camLength / 2)
+            cameraY = camLength / 2;
+        if (cameraX > mapWidth * rt - camLength / 2)
+            cameraX = mapWidth * rt - camLength / 2;
+        if (cameraY > mapHeight * rt - camLength / 2)
+            cameraY = mapHeight * rt - camLength / 2;
+        view.setCenter(cameraX, cameraY);
         return view;
     }
     void heroWithMapInteractions() {
-        for (int i = x / rt; i < (x + w) / rt; i++)
-            for (int j = y / rt; j < (y + h) / rt; j++) {
-                if (MapLayout[i][j] == 'w' || MapLayout[i][j] == '0') {
-                    if (dx > 0 && dy == 0)
-                        x = i * rt - w;
-                    if (dx < 0 && dy == 0)
-                        x = i * rt + rt;
-                    if (dx == 0 && dy > 0)
-                        y= j * rt - h;
-                    if (dx == 0 && dy < 0)
-                        y = j * rt + rt;
-                    //if (dx > 0 && dy > 0) {
-                    //    x = i * rt - w;
-                    //    y = j * rt - h;
-                    //}
-                    //if (dx < 0 && dy > 0) {
-                    //    x = i * rt + rt;
-                    //    y = j * rt - h;
-                    //}
-                    //if (dx > 0 && dy < 0) {
-                    //    x = i * rt - w;
-                    //    y = j * rt + rt;
-                    //}
-                    //if (dx < 0 && dy < 0) {
-                    //    x = i * rt + rt;
-                    //    y = j * rt + rt;
-                    //}
-                }
+        if (x < rt)
+            x = rt;
+        if (x > (mapWidth - 1) * rt - w)
+            x = (mapWidth - 1) * rt - w;
+        if (y < rt)
+            y = rt;
+        if (y > (mapHeight - 1) * rt - h)
+            y = (mapHeight - 1) * rt - h;
+    }
+    void heroWithEnemyCollision(Enemy enemy, float time) {
+        if (timeAfterCollision > 10) {
+            if (FloatRect(x, y, w, h).intersects(FloatRect(enemy.x, enemy.y, enemy.w, enemy.h))) {
+                hp -= enemy.damage;
+                timeAfterCollision = 0;
             }
+        }
+        if (hp <= 0) 
+            alive = false;
+
+        timeAfterCollision += 0.005 * time;
     }
 };
