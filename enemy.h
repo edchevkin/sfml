@@ -9,13 +9,14 @@ using namespace sf;
 
 class Enemy {
 public:
-	float x, y, w, h, dx, dy = 0;
-	float count = 0;
+	float x, y, dx, dy = 0;
+	float w, h = 0;
+	float dirCount = 0;
+	float dirCountCap = 2000;
 	float animCounter = 0;
 	float speed = 0.1;
 	int direction = 0;
 	int damage = 20;
-	int hp = 100;
 	RectangleShape hitbox;
 	Image image;
 	Texture texture;
@@ -45,11 +46,12 @@ public:
 			dx = -speed; dy = 0;
 		}
 
-		if (count > 2000) {
+		if (dirCount >= dirCountCap) {
+			dirCount = 0;
 			direction = RandDir();
-			count = 0;
 		}
-		count += time;
+		cout << dirCount << endl;
+		dirCount += time;
 
 		x += dx * time;
 		y += dy * time;
@@ -63,19 +65,19 @@ public:
 	void enemyWithMapInteractions() {
 		if (x < rt) {
 			x = rt;
-			count = 3001;
+			dirCount = dirCountCap;
 		}
 		if (x > (mapWidth - 1) * rt - w) {
 			x = (mapWidth - 1) * rt - w;
-			count = 3001;
+			dirCount = dirCountCap;
 		}
 		if (y < rt) {
 			y = rt;
-			count = 3001;
+			dirCount = dirCountCap;
 		}
 		if (y > (mapHeight - 1) * rt - h) {
 			y = (mapHeight - 1) * rt - h;
-			count = 3001;
+			dirCount = dirCountCap;
 		}
 	}
 	void animation(float time) {
@@ -104,10 +106,9 @@ public:
 		if (direction == 0 || direction == 1) {
 			return 2 + rand() % 2;
 		}
-		else {
+		else{
 			return rand() % 2;
 		}
 	}
-
 };
 

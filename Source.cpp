@@ -1,20 +1,19 @@
 #include <SFML/Graphics.hpp>
 #include "hero.h"
 #include "map.h"
-#include <vector>
+#include <sstream>
 
 using namespace sf;
 using namespace std;
-
-float getRandCoord() {
-    float r = rt + rand() % (mapWidth - 1) * rt;
-    return r;
-}
 
 
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(500, 500), "The Dungeon Master");
+
+    Font font;
+    font.loadFromFile("fonts/Alundra.ttf");
+
 
     Image mapImage;
     mapImage.loadFromFile("images/map2.png");
@@ -32,30 +31,39 @@ int main()
     float currentFrame = 0;
     Clock clock;
     float counter = 0;
-    float gameTimer = 0;
+    float scoreTemp = 0;
+    float score = 0;
 
     while (window.isOpen())
     {
         float time = clock.getElapsedTime().asMicroseconds();
         clock.restart();
-        time = time / 1000;
-        gameTimer += time;
+        time /= 1000;
+        scoreTemp += time / 1000;
+
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) 
                 window.close();
         }
 
-        hero.movement(time);
-        hero.heroWithEnemyCollision(enemy1, time);
-        hero.heroWithEnemyCollision(enemy2, time);
-        hero.heroWithEnemyCollision(enemy3, time);
-        window.setView(hero.view);
+        if (Keyboard::isKeyPressed(Keyboard::Escape))
+            hero.alive = false;
 
-        enemy1.movement(time);
-        enemy2.movement(time);
-        enemy3.movement(time);
+        if (hero.alive) {
+            hero.movement(time);
+
+            hero.heroWithEnemyCollision(enemy1, time);
+            hero.heroWithEnemyCollision(enemy2, time);
+            hero.heroWithEnemyCollision(enemy3, time);
+
+            enemy1.movement(time);
+            enemy2.movement(time);
+            enemy3.movement(time);
+        }
+
+        window.setView(hero.view);
 
         window.clear();
 
@@ -74,6 +82,30 @@ int main()
         window.draw(enemy1.sprite);
         window.draw(enemy2.sprite);
         window.draw(enemy3.sprite);
+
+        cout << enemy1.direction << endl;
+
+        if (!hero.alive) {
+            Text gameOverText("You have lost", font, 28);
+            gameOverText.setPosition(0, 0);
+            window.draw(gameOverText);
+
+            static int score = int(scoreTemp);
+            ostringstream ss;
+            ss << score;
+            Text pointsText(ss.str(), font, 28);
+            pointsText.setPosition(0, 32);
+            window.draw(pointsText);
+        }
+
+        if (hero.alive) {
+            ostringstream ss;
+            ss << hero.hp << "/100";
+            Text hpText(ss.str(), font, 20);
+            hpText.setFillColor(Color::Green);
+            hpText.setPosition(0, 0);
+            window.draw(hpText);
+        }
 
         window.display();
     }

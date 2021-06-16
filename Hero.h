@@ -16,7 +16,8 @@ public:
     int hp = 100;
     float camLength = rt * mapWidth;
     float timeAfterCollision = 0;
-    float counter = 0;
+    float animCounter = 0;
+    bool alive = true;
     RectangleShape hitbox;
     Image image;
     Texture texture;
@@ -63,67 +64,80 @@ public:
 
     void keyboard() {
         if (Keyboard::isKeyPressed(Keyboard::S)) {
-            direction = 0; speed = 0.1;
+            direction = 0;
+            speed = 0.1;
         }
         if (Keyboard::isKeyPressed(Keyboard::A)) {
-            direction = 1; speed = 0.1;
-            
+            direction = 1;
+            speed = 0.1;
         }
         if (Keyboard::isKeyPressed(Keyboard::D)) {
-            direction = 2; speed = 0.1;
-            
+            direction = 2;
+            speed = 0.1;
         }
         if (Keyboard::isKeyPressed(Keyboard::W)) {
-            direction = 3; speed = 0.1;
+            direction = 3; 
+            speed = 0.1;
              
         }
     }
 
     void animation(float time) {
         if (direction == 0) {
-            counter += 0.005 * time;
-            if (counter > 4) counter -= 4;
-            sprite.setTextureRect(IntRect(w * int(counter), 0, w, h));
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), 0, w, h));
         }
         if (direction == 1) {
-            counter += 0.005 * time;
-            if (counter > 4) counter -= 4;
-            sprite.setTextureRect(IntRect(w * int(counter), h, w, h));
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), h, w, h));
         }
         if (direction == 2) {
-            counter += 0.005 * time;
-            if (counter > 4) counter -= 4;
-            sprite.setTextureRect(IntRect(w * int(counter), 2 * h, w, h));
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), 2 * h, w, h));
         }
         if (direction == 3) {
-            counter += 0.005 * time;
-            if (counter > 4) counter -= 4;
-            sprite.setTextureRect(IntRect(w * int(counter), 3 * h, w, h));
+            animCounter += 0.005 * time;
+            if (animCounter > 4) animCounter -= 4;
+            sprite.setTextureRect(IntRect(w * int(animCounter), 3 * h, w, h));
         }
     }
 
     View viewCentersOnHero(float x, float y) {
         float cameraX = x + w / 2; float cameraY = y + h / 2;
-        if (cameraX < camLength / 2) cameraX = camLength / 2;
-        if (cameraY < camLength / 2) cameraY = camLength / 2;
-        if (cameraX > mapWidth * rt - camLength / 2) cameraX = mapWidth * rt - camLength / 2;
-        if (cameraY > mapHeight * rt - camLength / 2) cameraY = mapHeight * rt - camLength / 2;
+        if (cameraX < camLength / 2)
+            cameraX = camLength / 2;
+        if (cameraY < camLength / 2)
+            cameraY = camLength / 2;
+        if (cameraX > mapWidth * rt - camLength / 2)
+            cameraX = mapWidth * rt - camLength / 2;
+        if (cameraY > mapHeight * rt - camLength / 2)
+            cameraY = mapHeight * rt - camLength / 2;
         view.setCenter(cameraX, cameraY);
         return view;
     }
     void heroWithMapInteractions() {
-        if (x < rt) x = rt;
-        if (x > (mapWidth - 1) * rt - w) x = (mapWidth - 1) * rt - w;
-        if (y < rt) y = rt;
-        if (y > (mapHeight - 1) * rt - h) y = (mapHeight - 1) * rt - h;
+        if (x < rt)
+            x = rt;
+        if (x > (mapWidth - 1) * rt - w)
+            x = (mapWidth - 1) * rt - w;
+        if (y < rt)
+            y = rt;
+        if (y > (mapHeight - 1) * rt - h)
+            y = (mapHeight - 1) * rt - h;
     }
     void heroWithEnemyCollision(Enemy enemy, float time) {
         if (timeAfterCollision > 10) {
             if (FloatRect(x, y, w, h).intersects(FloatRect(enemy.x, enemy.y, enemy.w, enemy.h))) {
-                hp -= 20;
+                hp -= enemy.damage;
                 timeAfterCollision = 0;
             }
         }
+        if (hp <= 0) 
+            alive = false;
+
         timeAfterCollision += 0.005 * time;
     }
 };
