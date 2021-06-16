@@ -23,10 +23,7 @@
     <ClInclude Include="map.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="hero.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy.h">
+    <ClInclude Include="Hero.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
