@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "enemy.h"
 extern  const int rt;
 extern const int mapWidth;
 extern const int mapHeight;
@@ -12,7 +13,10 @@ class Hero {
 public:
     float x, y, w, h, dx, dy, speed = 0;
     int direction = 0;
-    float camLength = 640;
+    int hp = 100;
+    float camLength = rt * mapWidth;
+    float timeAfterCollision = 0;
+    float counter = 0;
     RectangleShape hitbox;
     Image image;
     Texture texture;
@@ -31,20 +35,71 @@ public:
     }
 
     void movement(float time) {
-        switch (direction) {
-        case 0: dx = 0; dy = speed; break;
-        case 1: dx = -speed; dy = 0; break;
-        case 2: dx = speed; dy = 0; break;
-        case 3: dx = 0; dy = -speed; break;
+        keyboard();
+
+        if (direction == 0) {
+            dx = 0; dy = speed;
+        }
+        else if (direction == 1) {
+            dx = -speed; dy = 0;
+        }
+        else if (direction == 2) {
+            dx = speed; dy = 0;
+        }
+        else if (direction == 3) {
+            dx = 0; dy = -speed;
         }
 
         y += dy * time;
         x += dx * time;
         speed = 0;
+
         heroWithMapInteractions();
+        animation(time);
         hitbox.setPosition(x, y);
         sprite.setPosition(hitbox.getPosition());
         viewCentersOnHero(x, y);
+    }
+
+    void keyboard() {
+        if (Keyboard::isKeyPressed(Keyboard::S)) {
+            direction = 0; speed = 0.1;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::A)) {
+            direction = 1; speed = 0.1;
+            
+        }
+        if (Keyboard::isKeyPressed(Keyboard::D)) {
+            direction = 2; speed = 0.1;
+            
+        }
+        if (Keyboard::isKeyPressed(Keyboard::W)) {
+            direction = 3; speed = 0.1;
+             
+        }
+    }
+
+    void animation(float time) {
+        if (direction == 0) {
+            counter += 0.005 * time;
+            if (counter > 4) counter -= 4;
+            sprite.setTextureRect(IntRect(w * int(counter), 0, w, h));
+        }
+        if (direction == 1) {
+            counter += 0.005 * time;
+            if (counter > 4) counter -= 4;
+            sprite.setTextureRect(IntRect(w * int(counter), h, w, h));
+        }
+        if (direction == 2) {
+            counter += 0.005 * time;
+            if (counter > 4) counter -= 4;
+            sprite.setTextureRect(IntRect(w * int(counter), 2 * h, w, h));
+        }
+        if (direction == 3) {
+            counter += 0.005 * time;
+            if (counter > 4) counter -= 4;
+            sprite.setTextureRect(IntRect(w * int(counter), 3 * h, w, h));
+        }
     }
 
     View viewCentersOnHero(float x, float y) {
@@ -57,22 +112,18 @@ public:
         return view;
     }
     void heroWithMapInteractions() {
-        //for (int i = x / rt; i < (x + w) / rt; i++)
-        //    for (int j = y / rt; j < (y + h) / rt; j++) {
-        //        if (MapLayout[i][j] == 'w' || MapLayout[i][j] == '0') {
-        //            if (dx > 0 && dy == 0)
-        //                x = i * rt - w;
-        //            if (dx < 0 && dy == 0)
-        //                x = i * rt + rt;
-        //            if (dx == 0 && dy > 0)
-        //                y= j * rt - h;
-        //            if (dx == 0 && dy < 0)
-        //                y = j * rt + rt;
-        //        }
-        //    }
         if (x < rt) x = rt;
         if (x > (mapWidth - 1) * rt - w) x = (mapWidth - 1) * rt - w;
         if (y < rt) y = rt;
         if (y > (mapHeight - 1) * rt - h) y = (mapHeight - 1) * rt - h;
+    }
+    void heroWithEnemyCollision(Enemy enemy, float time) {
+        if (timeAfterCollision > 10) {
+            if (FloatRect(x, y, w, h).intersects(FloatRect(enemy.x, enemy.y, enemy.w, enemy.h))) {
+                hp -= 20;
+                timeAfterCollision = 0;
+            }
+        }
+        timeAfterCollision += 0.005 * time;
     }
 };
