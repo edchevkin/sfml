@@ -8,22 +8,22 @@ using namespace std;
 using namespace sf;
 
 /**
-* enemy class
+* \brief enemy class
 */
 class Enemy {
-public:						//actually no private in the class
-	float x, y, dx, dy = 0; // x and y coord, dx and dy - x and y velocity
-	float w, h = 0; // width and heigth of enemy sprite and hitbox
-	float dirCount = 0; // counter for managing enemy movement directions
-	float dirCountCap = 2000; // countCap for dirCount
-	float animCounter = 0; // counter for managing animation
-	float speed = 0.1; // general velocity
-	int direction = 0; // movement direction
-	int damage = 20; // damamge delt by enemy
-	RectangleShape hitbox; // hitbox
-	Image image; // image of models
-	Texture texture; // texture of models
-	Sprite sprite; // enemy sprite
+public:	///< actually no private in the class
+	float x, y, dx, dy = 0; ///< x and y coord, dx and dy - x and y velocity
+	float w, h = 0; ///< width and heigth of enemy sprite and hitbox
+	float dirCount = 0; ///< counter for managing enemy movement directions
+	float dirCountCap = 2000; ///< countCap for dirCount
+	float animCounter = 0; ///< counter for managing animation
+	float speed = 0.1; ///< general velocity
+	int direction = 0; ///< movement direction
+	int damage = 20; ///< damamge delt by enemy
+	RectangleShape hitbox; ///< hitbox
+	Image image; ///< image of models
+	Texture texture; ///< texture of models
+	Sprite sprite; ///< enemy sprite
 	Enemy(float X, float Y, float W, float H) {
 		w = W; h = H;
 		x = X; y = Y;
@@ -37,9 +37,10 @@ public:						//actually no private in the class
 	}
 
 	/**
-	* movement function which handles enemy movement and things connected
+	* \brief movement function which handles enemy movement and things connected
 	* such as walking animation, interacions with map borders
 	* sets enemy's hitbox and sprite position
+	* 
 	* \param time is for smoother enemy movement and is used
 	* in dirCounter to manage the direction in which enemy is moving
 	*/
@@ -75,7 +76,7 @@ public:						//actually no private in the class
 
 
 	/**
-	* function for making enemy not cross the map borders
+	* \brief function for making enemy not cross the map borders
 	*/
 	void enemyWithMapInteractions() { 
 		
@@ -97,7 +98,8 @@ public:						//actually no private in the class
 		}
 	}
 	/**
-	* animation function handles enemy movement animation
+	* \brief animation function handles enemy movement animation
+	* 
 	* \param time is used in counter animCounter to select what 
 	* part of enemy.png programm should give to sprite
 	*/
@@ -124,8 +126,9 @@ public:						//actually no private in the class
 		}
 	}
 	/**
-	* utility function for getting random number 0-3 according
+	* \brief utility function for getting random number 0-3 according
 	* to certain condition
+	* 
 	* \return random number from 0 to 3
 	*/
 	int RandDir() {

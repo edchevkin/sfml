@@ -11,30 +11,35 @@ using namespace std;
 
 class Hero {
     /**
-    * class hero
+    * \brief class hero
     */
 public:
-    float x, y, dx, dy, speed = 0; //x and y coordinates, dx and dy are x and y velocity, speed - general velocity
-    float cameraX, cameraY = 0; // variables for handling camera postion
-    float w, h = 0; // width and heigth of hitbox and sprite
-    int direction = 0; // variable for handling direction of movement
-    int hp = 100; // hero max hp
-    float camLength = rt * mapWidth; // variable for camera width and height
-    float timeAfterCollision = 0; // counter for making hero immune
-    float animCounter = 0; // counter to handle animations
+    float x, y, dx, dy, speed = 0; ///< x and y coordinates, dx and dy are x and y velocity, speed - general velocity
+    float cameraX, cameraY = 0; ///< variables for handling camera postion
+    float w, h = 0; ///< width and heigth of hitbox and sprite
+    int direction = 0; ///< variable for handling direction of movement
+    int hp = 100; ///< hero max hp
+    float camLength = rt * mapWidth; ///< variable for camera width and height
+    float timeAfterCollision = 0; ///< counter for making hero immune
+    float animCounter = 0; ///< counter to handle animations
     bool alive = true;
-    RectangleShape hitbox; // hitbox
-    Image image; // image of models
-    Texture texture; // texture of models
-    Sprite sprite; // hero sprite
-    View view; // camera
+    RectangleShape hitbox; ///< hitbox
+    Image image; ///< image of models
+    Texture texture; ///< texture of models
+    Sprite sprite; ///< hero sprite
+    View view; ///< camera
 
     /**
-    * hero object initializator
+    * \brief hero object initializator
+    * 
     * \param X starting x coord of hero
+    * 
     * \param Y starting y coord of hero
+    * 
     * \param W width of hero hitbox and sprite
+    * 
     * \param H height of hero hitbox and sprite
+    * 
     */
     Hero(float X, float Y, float W, float H) {
         w = W; h = H;
@@ -49,10 +54,11 @@ public:
     }
 
     /**
-    * function which handles general hero movement and things connected
+    * \brief function which handles general hero movement and things connected
     * such as keyboard surveillance, moving animation,
     * interactions of hero with map, sets position of hitbox
     * and sprite
+    * 
     * \param time is time elapsed since the last game window
     * update and is used for smoother hero movement
     */
@@ -85,7 +91,7 @@ public:
     }
 
     /**
-    * keyboard function handles key pressings
+    * \brief keyboard function handles key pressings
     */
     void keyboard() {
         if (Keyboard::isKeyPressed(Keyboard::S)) {
@@ -108,7 +114,8 @@ public:
     }
 
     /**
-    * animation function manages hero movement animation
+    * \brief animation function manages hero movement animation
+    * 
     * \param time is time elapsed since the last game window update
     * and is used for changing hero's sprite
     */
@@ -137,7 +144,8 @@ public:
     }
 
     /**
-    * utility function for centering camera on hero
+    * \brief utility function for centering camera on hero
+    * 
     * \return sf::View view which is a camera position
     */
     View viewCentersOnHero() {   
@@ -155,7 +163,7 @@ public:
     }
 
     /**
-    * function which oversees hero not crossing map borders
+    * \brief function which oversees hero not crossing map borders
     */
     void heroWithMapInteractions() {
         if (x < rt)
@@ -169,9 +177,11 @@ public:
     }
 
     /**
-    * function which checks if hero collides with enemy and
+    * \brief function which checks if hero collides with enemy and
     * reduces hp if so
+    * 
     * \param enemy class object
+    * 
     * \param time is time elapsed after last game window clear
     * and is used in  timeAfterCollision counter to make hero
     * immune for certain amount of time
